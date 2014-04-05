@@ -1,0 +1,101 @@
+Fun With Melanogaster 
+========================================================
+
+```{r include=FALSE}
+library(knitr)
+library(markdown)
+require(ggplot2)
+require (proto)
+require(gtable)
+require(gridExtra)
+require(grid)
+require(digest)
+require(plotrix)
+require(devtools)
+```
+
+```{r}
+behave<-read.table("~/Desktop/melfun.csv", header=TRUE, sep=",")
+```
+
+```{r}
+behave1<-subset(behave, replicate=="a")
+behave2<-na.omit(behave1)
+```
+
+```{r include=FALSE}
+require(ggplot2)
+require(GGally)
+require(CCA)
+```
+
+```{r}
+ecospermomics<-behave2[,6:8]
+ggpairs(ecospermomics)
+```
+
+
+```{r}
+cor.test(behave2$male,behave2$SpermTransferred,method="spearman")
+cor.test(behave2$male,behave2$SpermTransferred,method="pearson")
+```
+========================================================
+## Reshape2 & dplyr ()
+
+
+install.packages('dplyr')
+install.packages('reshape2') 
+library(reshape2)
+library(dplyr)
+install.packages('plyr')
+library(plyr)
+
+```{r include=FALSE}
+library(plyr)
+```
+
+
+devtools::install_github("hadley/dplyr") LATEST PACKAGE UNDER DEVELOPMENT IF NEEDED
+
+melted <- melt(data, id.vars=c("behave2$genotype", "behave2$SpermTransferred"))
+library(dplyr)
+grouped <- group_by(melted, behave2$genotype, behave2$SpermTransferred)
+
+=============
+##  Summary Stats using ddply in the plyr package
+
+```{r}
+ddply(behave2, .(genotype), numcolwise(mean))
+```
+
+```{r}
+ddply(behave2, "genotype", summarise, var(offspring))
+```
+=======
+This below function allows me to call all correlations by group of genotype.  I want to test this on the shapiro.test to see if it will apply.
+
+```{r}
+ ddply(behave2, .(genotype), summarize,
+       r=cor.test(SpermTransferred, male)$estimate,
+       p=cor.test(SpermTransferred, male)$p.value)
+```
+
+```{r}
+ddply(behave2, "genotype", summarise, var(Area))
+```
+
+```{r}
+ddply(behave2, "genotype", summarise, var(HW))
+```
+
+```{r}
+ddply(behave2, "genotype", summarise, var(SpermTransferred))
+```
+
+=======
+Summary stats using a sqrt transformation.
+
+behave<-read.table("~/Desktop/melfununo.csv", header=TRUE, sep=",")
+
+
+
